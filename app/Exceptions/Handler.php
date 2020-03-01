@@ -31,8 +31,6 @@ class Handler extends ExceptionHandler
      *
      * @param  \Exception  $exception
      * @return void
-     *
-     * @throws \Exception
      */
     public function report(Exception $exception)
     {
@@ -44,12 +42,22 @@ class Handler extends ExceptionHandler
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \Exception  $exception
-     * @return \Symfony\Component\HttpFoundation\Response
-     *
-     * @throws \Exception
+     * @return \Illuminate\Http\Response
      */
     public function render($request, Exception $exception)
     {
+
+    // This will replace our 404 response with
+    // a JSON response.
+    if ($exception instanceof ModelNotFoundException &&
+    $request->wantsJson())
+{
+    return response()->json([
+        'data' => 'Resource not found'
+    ], 404);
+}
         return parent::render($request, $exception);
+
+        
     }
 }
